@@ -6,12 +6,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class ResourceServerConfig extends ResourceServerConfigurerAdapter  {
+@EnableResourceServer
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -33,4 +35,5 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter  {
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.stateless(true);
     }
+
 }
