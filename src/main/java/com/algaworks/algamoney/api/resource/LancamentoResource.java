@@ -5,6 +5,7 @@ import com.algaworks.algamoney.api.exceptionhandler.AlgaMoneyExceptionHandler.Er
 import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.model.Lancamento_;
 import com.algaworks.algamoney.api.repository.LancamentoRepository;
+import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import com.algaworks.algamoney.api.service.LancamentoService;
 import com.algaworks.algamoney.api.service.exception.CadastroInexistenteOuInativoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,11 @@ public class LancamentoResource {
     private LancamentoService lancamentoService;
 
     @GetMapping
-    public List<Lancamento> listar() {
+    public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter) {
 
-        return lancamentoRepository.findAll();
+        return lancamentoRepository.filtrar(lancamentoFilter);
     }
-//teste
+
     @GetMapping("/{codigo}")
     public ResponseEntity<Lancamento> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<Lancamento> lancamento = this.lancamentoRepository.findById(codigo);
