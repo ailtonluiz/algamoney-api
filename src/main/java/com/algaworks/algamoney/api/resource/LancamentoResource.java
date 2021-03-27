@@ -42,7 +42,7 @@ public class LancamentoResource {
 
         return lancamentoRepository.findAll();
     }
-
+//teste
     @GetMapping("/{codigo}")
     public ResponseEntity<Lancamento> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<Lancamento> lancamento = this.lancamentoRepository.findById(codigo);
