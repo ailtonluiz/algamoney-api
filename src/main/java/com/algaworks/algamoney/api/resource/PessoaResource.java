@@ -29,7 +29,7 @@ public class PessoaResource {
     private PessoaService pessoaService;
 
     @GetMapping
-    public List<Pessoa> lsitar() {
+    public List<Pessoa> listar() {
 
         return pessoaRepository.findAll();
 
