@@ -11,6 +11,8 @@ import java.time.LocalDate;
 public class LancamentoFilter {
 
     private String descricao;
+    
+    private String nomePessoa;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataVencimentoDe;

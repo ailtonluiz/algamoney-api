@@ -2,6 +2,7 @@ package com.algaworks.algamoney.api.repository.lancamento;
 
 import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.model.Lancamento_;
+import com.algaworks.algamoney.api.model.Pessoa_;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,7 +70,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
                     root.get(Lancamento_.dataVencimento), lancamentoFilter.getDataVencimentoAte()
             ));
         }
-
+        if (lancamentoFilter.getNomePessoa() != null)
+            predicates.add(builder.like(
+                    builder.lower(root.get(Lancamento_.pessoa).get(Pessoa_.nome)), "%" + lancamentoFilter.getNomePessoa() + "%"));
 
         return predicates.toArray(new Predicate[predicates.size()]);
     }
