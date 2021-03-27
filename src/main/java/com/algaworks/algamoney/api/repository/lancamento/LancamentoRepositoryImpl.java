@@ -3,6 +3,9 @@ package com.algaworks.algamoney.api.repository.lancamento;
 import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.model.Lancamento_;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityManager;
@@ -14,7 +17,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
@@ -23,7 +25,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
 
     @Override
-    public List<Lancamento> filtrar(LancamentoFilter lancamentoFilter) {
+    public Page<Lancamento> filtrar(LancamentoFilter lancamentoFilter, Pageable pageable) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Lancamento> criteriaQuery = builder.createQuery(Lancamento.class);
@@ -34,10 +36,16 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         criteriaQuery.where(predicates);
 
         TypedQuery<Lancamento> query = entityManager.createQuery(criteriaQuery);
+        adicionarRestricoesDePaginacao(query, pageable);
 
-        return query.getResultList();
+
+        return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
     }
 
+    /**
+     * Método que cria restrições para fazer os filtros
+     * É possível fazer a pesquisar por data e/ou descrição do lançamento
+     */
     private Predicate[] criarRestricoes(LancamentoFilter lancamentoFilter, CriteriaBuilder builder, Root<Lancamento> root) {
 
         List<Predicate> predicates = new ArrayList<>();
@@ -65,4 +73,31 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
         return predicates.toArray(new Predicate[predicates.size()]);
     }
+
+
+    private void adicionarRestricoesDePaginacao(TypedQuery<Lancamento> query, Pageable pageable) {
+
+        int paginaAtual = pageable.getPageNumber();
+        int totalRegistrosPorPagina = pageable.getPageSize();
+        int primeiroRegistroDaPagina = paginaAtual * totalRegistrosPorPagina;
+
+        query.setFirstResult(primeiroRegistroDaPagina);
+        query.setMaxResults(totalRegistrosPorPagina);
+
+
+    }
+
+    private Long total(LancamentoFilter lancamentoFilter) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+
+        Root<Lancamento> root = criteriaQuery.from(Lancamento.class);
+
+        Predicate[] predicates = criarRestricoes(lancamentoFilter, builder, root);
+        criteriaQuery.where(predicates);
+
+        criteriaQuery.select(builder.count(root));
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
 }
