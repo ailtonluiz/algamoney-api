@@ -1,6 +1,7 @@
 package com.algaworks.algamoney.api.repository.lancamento;
 
 import com.algaworks.algamoney.api.model.Lancamento;
+import com.algaworks.algamoney.api.model.Lancamento_;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import org.springframework.util.ObjectUtils;
 
@@ -13,6 +14,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
@@ -41,15 +43,23 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         List<Predicate> predicates = new ArrayList<>();
 
         if (!ObjectUtils.isEmpty(lancamentoFilter.getDescricao())) {
-
+            predicates.add(builder.like(
+                    builder.lower(root.get(Lancamento_.descricao)),
+                    "%" + lancamentoFilter.getDescricao()
+                            .toLowerCase() + "%"
+            ));
         }
 
         if (lancamentoFilter.getDataVencimentoDe() != null) {
-
+            predicates.add(builder.greaterThanOrEqualTo(
+                    root.get(Lancamento_.dataVencimento), lancamentoFilter.getDataVencimentoDe()
+            ));
         }
 
         if (lancamentoFilter.getDataVencimentoAte() != null) {
-
+            predicates.add(builder.lessThanOrEqualTo(
+                    root.get(Lancamento_.dataVencimento), lancamentoFilter.getDataVencimentoAte()
+            ));
         }
 
 
